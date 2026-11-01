@@ -31,25 +31,91 @@ template <typename K, typename V, typename Compare>
 void AdaptableHeapPriorityQueue<K,V,Compare>::validateHandle(EntryPtr e) const{if(!e||e->index>=heap_.size()||heap_[e->index]!=e)throw std::invalid_argument("Invalid or stale priority-queue entry handle");}
 template <typename K, typename V, typename Compare>
 typename AdaptableHeapPriorityQueue<K,V,Compare>::EntryPtr AdaptableHeapPriorityQueue<K,V,Compare>::insert(const K& key,const V& value){
-    // TODO: allocate, append, assign index/id, then up-heap.
-    (void)key;(void)value;return nullptr;
+    if (key==K{}) 
+    {
+        throw std::invalid_argument("Key cannot be default-constructed");
+    }
+    if (value==V{}) 
+    {
+        throw std::invalid_argument("Value cannot be default-constructed");
+    }
+    std::size_t index=heap_.size(); 
+    EntryPtr e=new Entry{key,value,index,nextId_++}; 
+    heap_.push_back(e); 
+    upHeap(index); 
+    return e;
 }
 template <typename K, typename V, typename Compare>
 const typename AdaptableHeapPriorityQueue<K,V,Compare>::Entry& AdaptableHeapPriorityQueue<K,V,Compare>::min() const{if(empty())throw std::out_of_range("min() on empty priority queue");return *heap_.front();}
 template <typename K, typename V, typename Compare>
 typename AdaptableHeapPriorityQueue<K,V,Compare>::Entry AdaptableHeapPriorityQueue<K,V,Compare>::removeMin(){throw std::logic_error("removeMin not implemented");}
 template <typename K, typename V, typename Compare>
-void AdaptableHeapPriorityQueue<K,V,Compare>::remove(EntryPtr e){(void)e;/* TODO */}
+void AdaptableHeapPriorityQueue<K,V,Compare>::remove(EntryPtr e){
+    validateHandle(e);
+    auto index=e->index;
+    if(index==heap_.size()-1)
+    {
+        delete e; heap_.pop_back(); 
+        return;
+    }
+    swapEntries(index,heap_.size()-1);
+    delete heap_.back();
+    heap_.pop_back();
+    bubble(index);
+    /* TODO */}
 template <typename K, typename V, typename Compare>
-void AdaptableHeapPriorityQueue<K,V,Compare>::replaceKey(EntryPtr e,const K& k){(void)e;(void)k;/* TODO */}
+void AdaptableHeapPriorityQueue<K,V,Compare>::replaceKey(EntryPtr e,const K& k){
+    validateHandle(e);
+    if (k==K{}) 
+    {
+        throw std::invalid_argument("Key cannot be default-constructed");
+    }
+    e->key=k;
+    std::size_t index=e->index;
+    bubble(index);
+    /* TODO */}
 template <typename K, typename V, typename Compare>
-void AdaptableHeapPriorityQueue<K,V,Compare>::replaceValue(EntryPtr e,const V& v){(void)e;(void)v;/* TODO */}
+void AdaptableHeapPriorityQueue<K,V,Compare>::replaceValue(EntryPtr e,const V& v){
+    validateHandle(e);
+    if (v==V{}) 
+    {
+        throw std::invalid_argument("Value cannot be default-constructed");
+    }
+    e->value=v;
+    /* TODO */}
 template <typename K, typename V, typename Compare>
-void AdaptableHeapPriorityQueue<K,V,Compare>::buildHeap(std::vector<std::pair<K,V>> entries){(void)entries;/* TODO: bottom-up construction, not repeated insert */}
+void AdaptableHeapPriorityQueue<K,V,Compare>::buildHeap(std::vector<std::pair<K,V>> entries){
+    heap_.clear();
+    nextId_=1;
+    for(const auto& [key,value]:entries){
+        if (key==K{}) 
+        {
+            throw std::invalid_argument("Key cannot be default-constructed");
+        }
+        if (value==V{}) 
+        {
+            throw std::invalid_argument("Value cannot be default-constructed");
+        }
+        heap_.push_back(new Entry{key,value,heap_.size(),nextId_++});
+    }
+    
+    /* TODO: bottom-up construction, not repeated insert */}
 template <typename K, typename V, typename Compare>
 bool AdaptableHeapPriorityQueue<K,V,Compare>::validHeap() const noexcept{for(std::size_t i=1;i<heap_.size();++i){std::size_t p=(i-1)/2;if(less(heap_[i],heap_[p])||heap_[i]->index!=i)return false;}return true;}
 template <typename T, typename Compare>
 void heapSort(std::vector<T>& values,Compare comp){
     // TODO: implement in-place heap sort. Default comparator must produce ascending order.
-    (void)values;(void)comp;
+    if (values.empty()) 
+    {
+        return;
+    }
+
+    AdaptableHeapPriorityQueue<T,T,Compare> pq(comp);
+    for (const auto& value : values) {
+        pq.insert(value, value);
+    }
+    for (std::size_t i = 0; i < values.size(); ++i) {
+        values[i] = pq.removeMin().value;
+    }
+    
 }
