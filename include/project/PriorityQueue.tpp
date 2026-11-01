@@ -50,7 +50,22 @@ typename AdaptableHeapPriorityQueue<K,V,Compare>::EntryPtr AdaptableHeapPriority
 template <typename K, typename V, typename Compare>
 const typename AdaptableHeapPriorityQueue<K,V,Compare>::Entry& AdaptableHeapPriorityQueue<K,V,Compare>::min() const{if(empty())throw std::out_of_range("min() on empty priority queue");return *heap_.front();}
 template <typename K, typename V, typename Compare>
-typename AdaptableHeapPriorityQueue<K,V,Compare>::Entry AdaptableHeapPriorityQueue<K,V,Compare>::removeMin(){throw std::logic_error("removeMin not implemented");}
+typename AdaptableHeapPriorityQueue<K,V,Compare>::Entry AdaptableHeapPriorityQueue<K,V,Compare>::removeMin(){
+    if(empty())
+    {
+        throw std::out_of_range("removeMin() on empty priority queue");
+    }
+    EntryPtr minEntry=heap_.front();
+    swapEntries(0,heap_.size()-1);
+    heap_.pop_back();
+    if(!heap_.empty())
+    {
+        downHeap(0);
+    }
+    Entry removedEntry=*minEntry;
+    delete minEntry;
+    return removedEntry;
+}
 template <typename K, typename V, typename Compare>
 void AdaptableHeapPriorityQueue<K,V,Compare>::remove(EntryPtr e){
     validateHandle(e);
