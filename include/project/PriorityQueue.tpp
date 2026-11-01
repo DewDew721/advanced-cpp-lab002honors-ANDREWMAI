@@ -107,7 +107,7 @@ void AdaptableHeapPriorityQueue<K,V,Compare>::buildHeap(std::vector<std::pair<K,
     heap_.clear();
     nextId_=1;
     for(const auto& [key,value]:entries){
-        /*
+        
         if (key==K{}) 
         {
             throw std::invalid_argument("Key cannot be default-constructed");
@@ -116,8 +116,12 @@ void AdaptableHeapPriorityQueue<K,V,Compare>::buildHeap(std::vector<std::pair<K,
         {
             throw std::invalid_argument("Value cannot be default-constructed");
         }
-        */
+        
         heap_.push_back(new Entry{key,value,heap_.size(),nextId_++});
+    }
+    for(std::size_t i=heap_.size()/2;i>0;--i)
+    {
+        downHeap(i-1);
     }
     
     /* TODO: bottom-up construction, not repeated insert */}
