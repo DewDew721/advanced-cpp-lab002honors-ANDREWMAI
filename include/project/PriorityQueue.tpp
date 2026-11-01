@@ -31,6 +31,7 @@ template <typename K, typename V, typename Compare>
 void AdaptableHeapPriorityQueue<K,V,Compare>::validateHandle(EntryPtr e) const{if(!e||e->index>=heap_.size()||heap_[e->index]!=e)throw std::invalid_argument("Invalid or stale priority-queue entry handle");}
 template <typename K, typename V, typename Compare>
 typename AdaptableHeapPriorityQueue<K,V,Compare>::EntryPtr AdaptableHeapPriorityQueue<K,V,Compare>::insert(const K& key,const V& value){
+    /*
     if (key==K{}) 
     {
         throw std::invalid_argument("Key cannot be default-constructed");
@@ -39,6 +40,7 @@ typename AdaptableHeapPriorityQueue<K,V,Compare>::EntryPtr AdaptableHeapPriority
     {
         throw std::invalid_argument("Value cannot be default-constructed");
     }
+    */
     std::size_t index=heap_.size(); 
     EntryPtr e=new Entry{key,value,index,nextId_++}; 
     heap_.push_back(e); 
@@ -66,10 +68,12 @@ void AdaptableHeapPriorityQueue<K,V,Compare>::remove(EntryPtr e){
 template <typename K, typename V, typename Compare>
 void AdaptableHeapPriorityQueue<K,V,Compare>::replaceKey(EntryPtr e,const K& k){
     validateHandle(e);
+    /*
     if (k==K{}) 
     {
         throw std::invalid_argument("Key cannot be default-constructed");
     }
+    */
     e->key=k;
     std::size_t index=e->index;
     bubble(index);
@@ -88,6 +92,7 @@ void AdaptableHeapPriorityQueue<K,V,Compare>::buildHeap(std::vector<std::pair<K,
     heap_.clear();
     nextId_=1;
     for(const auto& [key,value]:entries){
+        /*
         if (key==K{}) 
         {
             throw std::invalid_argument("Key cannot be default-constructed");
@@ -96,6 +101,7 @@ void AdaptableHeapPriorityQueue<K,V,Compare>::buildHeap(std::vector<std::pair<K,
         {
             throw std::invalid_argument("Value cannot be default-constructed");
         }
+        */
         heap_.push_back(new Entry{key,value,heap_.size(),nextId_++});
     }
     
